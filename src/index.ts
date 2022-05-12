@@ -11,7 +11,7 @@ function command(program: Command) {
     .description('generate vscode tasks and launchers')
     .option('-d, --debug', 'debug mode')
     .option('-f, --file <path>', 'specify the smake build file')
-    .action(async (_, opts) => {
+    .action(async (opts) => {
       const file = resolve(opts.file || 'smake.js');
       if (!existsSync(file)) {
         Log.e('Cannot find', yellow(file));
