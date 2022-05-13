@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 import { dirname, resolve } from 'path';
 import { existsSync } from 'fs';
-import { Log } from 'smake';
+import { flatTarget, Log } from 'smake';
 import { green, yellow } from 'colors/safe';
 import { mkdir, writeFile } from 'fs/promises';
 
@@ -17,15 +17,20 @@ function command(program: Command) {
         Log.e('Cannot find', yellow(file));
         process.exit(1);
       }
-      const builds = require(file) as any[];
+      const targets = require(file) as any[];
       const files: Array<{
         path: string;
         content: string;
         okMsg: string;
       }> = [];
+      const builds = targets.map(t => flatTarget(t).map(Object.values)).flat(100) as any[];
+      console.log(builds)
       const ts = builds.filter((t) => t.vscode);
+      if(!ts.length) {
+        console.log(yellow('No VSCode entry.'));
+      }
       for (const t of ts) {
-        await t.vscode(files, { debug: opts.debug }, t, builds);
+        await t.vscode(files, { debug: opts.debug }, t, targets);
       }
       for (const f of files) {
         await mkdir(dirname(f.path), { recursive: true });
