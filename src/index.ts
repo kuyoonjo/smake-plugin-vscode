@@ -24,10 +24,10 @@ function command(program: Command) {
         okMsg: string;
       }> = [];
       const builds = targets.map(t => flatTarget(t).map(Object.values)).flat(100) as any[];
-      console.log(builds)
       const ts = builds.filter((t) => t.vscode);
-      if(!ts.length) {
+      if (!ts.length) {
         console.log(yellow('No VSCode entry.'));
+        process.exit();
       }
       for (const t of ts) {
         await t.vscode(files, { debug: opts.debug }, t, targets);
